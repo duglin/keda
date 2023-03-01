@@ -1,0 +1,31 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: redis-consumer
+spec:
+  scaleTargetRef:
+    name: redis-consumer
+  pollingInterval: 1
+  cooldownPeriod: 2
+  maxReplicaCount: 30
+  triggers:
+    - type: redis
+      metadata:
+        address: redis.default.svc.cluster.local:6379
+        listName: hello
+        listLength: "2"
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 2
+          policies:
+          - type: Pods
+            value: 100
+            periodSeconds: 2
+        scaleUp:
+          stabilizationWindowSeconds: 0
+          policies:
+          - type: Pods
+            value: 100
+            periodSeconds: 1

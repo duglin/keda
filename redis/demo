@@ -1,0 +1,29 @@
+#!/bin/bash
+
+source <(curl -s https://raw.githubusercontent.com/duglin/tools/master/demoscript/demoscript)
+
+make clean > /dev/null 2>&1
+
+comment --nolf "This demo will..."
+comment --nolf "- Deploy a 'consumer', then its auto-scaler config "
+comment --pauseafter "- Deploy a 'producer' to generate events, "\
+"watch the consumer scale "
+
+comment "The consumer "
+scroll consumer.yaml
+doit kubectl apply -f consumer.yaml
+
+comment --pauseafter "Notice the consumer is scaled to 1 "
+
+comment "The scaler "
+doit --noexec "more scaler.yaml"
+sed -n '/advanced/q;p' scaler.yaml
+echo
+doit kubectl apply -f scaler.yaml
+
+comment --pauseafter "Notice the consumer is scaled to 0 "
+comment "Now let's produce some events, watch the consumer scale "
+doit --noscroll --showcmd="kubectl run redis-producer \
+--image ghcr.io/duglin/redis-producer 300" make producer
+
+# make clean > /dev/null 2>&1

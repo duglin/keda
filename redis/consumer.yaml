@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-consumer
+spec:
+  selector:
+    matchLabels:
+      app: redis-consumer
+  template:
+    metadata:
+      labels:
+        app: redis-consumer
+    spec:
+      containers:
+        - name: redis-consumer
+          image: ghcr.io/duglin/keda-redis

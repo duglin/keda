@@ -1,0 +1,11 @@
+#!/bin/bash
+
+kubectl get pods -l app=redis-consumer > redis-output 2>&1
+count="0"
+if [[ -f redis-output ]]; then
+  count=$(grep -e Running -e Creating redis-output | wc -l)
+fi
+date
+echo -e "\n# of active consumers:" $count "\n"
+cat redis-output | sed "s/resources/consumers/"
+rm -f redis-output

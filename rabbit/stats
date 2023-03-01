@@ -1,0 +1,11 @@
+#!/bin/bash
+
+kubectl get pods -l app=rabbitmq-consumer > rabbit-output 2>&1
+count="0"
+if [[ -f rabbit-output ]]; then
+  count=$(grep -e Running -e Creating redis-output | wc -l)
+fi
+date
+echo -e "\n# of active consumers:" $count "\n"
+cat rabbit-output | sed "s/resources/consumers/"
+rm -f rabbit-output
